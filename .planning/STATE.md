@@ -23,7 +23,7 @@ See: .planning/PROJECT.md (updated 2026-11-24)
 Phase: 3 of 5 complete (Story Configuration & Character Builder)
 Plan: 03-01 complete (2 tasks, 2 commits)
 Status: Phase 3 UAT/verification complete; ready for Phase 4
-Last activity: 2026-11-24 — Quick task 261124-4w1 switched Gemini to `gemini-3.8-flash`, committed Phase 2 leftovers, passed all gates, and closed Phase 3 UAT
+Last activity: 2026-11-24 — Completed quick task 261124-5cy: added automatic Gemini model fallback with clean terminal JSON errors; 32/32 tests, typecheck, and build pass
 
 Progress: [██████░░░░] 60%
 
@@ -67,6 +67,7 @@ Recent decisions affecting current work:
 - [Phase 3]: Mirrored client limits (5 characters, 50/100/500 chars) from `src/lib/prompts.ts` and locked all controls while a request is in flight to protect the 15 RPM quota.
 - [Phase 3]: Used a `FriendlyError` marker so raw fetch failures produce one consistent connection alert while server messages pass through.
 - [Quick 261124-4w1]: Switched `DEFAULT_STORY_MODEL` from `gemini-2.5-flash` to `gemini-3.8-flash` without changing the `@google/genai` `generateContentStream` call shape.
+- [Quick 261124-5cy]: Added a pre-stream fallback chain (`gemini-3.8-flash` → `gemini-3.8-flash-lite` → `gemini-2.5-flash-lite`) with 503/404 retry, immediate 429 stop, and static friendly JSON errors; no stream that already emitted text is restarted.
 
 ### Pending Todos
 
@@ -81,6 +82,7 @@ Recent decisions affecting current work:
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 261124-4w1 | Replace gemini-2.5-flash with gemini-3.8-flash; commit Phase 2 leftovers; verify and close Phase 3 UAT | 2026-11-24 | c2035bc | [261124-4w1-replace-gemini-2-5-flash-with-gemini-3-8](./quick/261124-4w1-replace-gemini-2-5-flash-with-gemini-3-8/) |
+| 261124-5cy | Add Gemini fallback chain with 503/404 retry and clean terminal JSON errors | 2026-11-24 | 42b7de8 | [261124-5cy-gemini-3-8-flash-is-returning-sustained-](./quick/261124-5cy-gemini-3-8-flash-is-returning-sustained-/) |
 
 ## Deferred Items
 
@@ -93,5 +95,5 @@ Items acknowledged and deferred at milestone close, most recent first:
 ## Session Continuity
 
 Last session: 2026-11-24
-Stopped at: Phase 3 complete and verified (5/5 must-haves, UAT closed); quick task 261124-4w1 completed with all gates passing. Ready for Phase 4.
+Stopped at: Phase 3 complete and verified (5/5 must-haves, UAT closed); quick tasks 261124-4w1 and 261124-5cy completed with all gates passing. Ready for Phase 4.
 Resume file: None

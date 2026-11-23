@@ -1,12 +1,12 @@
 ---
 gsd_state_version: '1.0'
-status: verifying
+status: paused
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 4
   completed_plans: 4
-  percent: 40
+  percent: 60
 ---
 
 # Project State
@@ -16,16 +16,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-11-24)
 
 **Core value:** Generate creative, coherent, and well-structured stories with beginning, middle, climax, and conclusion—even when given minimal or no user input—delivering real-time streaming feedback and seamless regeneration.
-**Current focus:** Phase 3 verification: Story Configuration & Character Builder
+**Current focus:** Phase 4: Story Reader Canvas & Clipboard Controls (ready to plan)
 
 ## Current Position
 
-Phase: 3 of 5 (Story Configuration & Character Builder)
+Phase: 3 of 5 complete (Story Configuration & Character Builder)
 Plan: 03-01 complete (2 tasks, 2 commits)
-Status: Awaiting human verification (03-UAT.md)
-Last activity: 2026-11-24 — Phase 3 form and streaming hook implemented; 28/28 tests, typecheck, and build pass; verifier reports 5/5 must-haves
+Status: Phase 3 UAT/verification complete; ready for Phase 4
+Last activity: 2026-11-24 — Quick task 261124-4w1 switched Gemini to `gemini-3.8-flash`, committed Phase 2 leftovers, passed all gates, and closed Phase 3 UAT
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -66,15 +66,21 @@ Recent decisions affecting current work:
 - [Phase 3]: Moved streaming orchestration into `src/hooks/useStoryGeneration.ts` so Phase 4 can replace the preview with a Reader Canvas without changing fetch logic.
 - [Phase 3]: Mirrored client limits (5 characters, 50/100/500 chars) from `src/lib/prompts.ts` and locked all controls while a request is in flight to protect the 15 RPM quota.
 - [Phase 3]: Used a `FriendlyError` marker so raw fetch failures produce one consistent connection alert while server messages pass through.
+- [Quick 261124-4w1]: Switched `DEFAULT_STORY_MODEL` from `gemini-2.5-flash` to `gemini-3.8-flash` without changing the `@google/genai` `generateContentStream` call shape.
 
 ### Pending Todos
 
-- Resolve 3 human-verification items in `.planning/phases/03-story-configuration-character-builder/03-UAT.md` before marking Phase 3 complete.
+- Plan Phase 4 when ready.
 
 ### Blockers/Concerns
 
 - Gemini API quota is exhausted until 2026-12-01. Development verification must stay offline with mocked `@google/genai`; the Gemini integration is preserved for later use.
-- Phase 3 automated verification passed but 3 UAT items remain: responsive visual quality, live end-to-end streaming, and the `Mode: mvp` metadata decision.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 261124-4w1 | Replace gemini-2.5-flash with gemini-3.8-flash; commit Phase 2 leftovers; verify and close Phase 3 UAT | 2026-11-24 | c2035bc | [261124-4w1-replace-gemini-2-5-flash-with-gemini-3-8](./quick/261124-4w1-replace-gemini-2-5-flash-with-gemini-3-8/) |
 
 ## Deferred Items
 
@@ -87,5 +93,5 @@ Items acknowledged and deferred at milestone close, most recent first:
 ## Session Continuity
 
 Last session: 2026-11-24
-Stopped at: Phase 3 plan 03-01 implemented and verified (5/5 must-haves); awaiting UAT before advancing to Phase 4.
-Resume file: .planning/phases/03-story-configuration-character-builder/03-UAT.md
+Stopped at: Phase 3 complete and verified (5/5 must-haves, UAT closed); quick task 261124-4w1 completed with all gates passing. Ready for Phase 4.
+Resume file: None

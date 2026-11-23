@@ -205,7 +205,7 @@ In Next.js, closing the browser connection aborts the incoming HTTP request (`re
        async start(controller) {
          try {
            const responseStream = await ai.models.generateContentStream(
-             { model: 'gemini-2.5-flash', contents: prompt },
+             { model: 'gemini-3.8-flash', contents: prompt },
              { signal: abortController.signal }
            );
            for await (const chunk of responseStream) {
@@ -315,7 +315,7 @@ Common mistakes when connecting Next.js to the Google Gemini API on Vercel.
 |-------------|----------------|------------------|
 | **Gemini API Key Env Var** | Naming it `NEXT_PUBLIC_GEMINI_API_KEY` | Name it `GEMINI_API_KEY` without `NEXT_PUBLIC_`. The `@google/genai` SDK automatically detects `process.env.GEMINI_API_KEY` in Node.js environments. |
 | **Vercel Function Timeout** | Assuming serverless functions run indefinitely | Vercel Hobby plan functions default to 300 seconds (5 minutes), but if streaming hangs without sending initial bytes, proxies drop after 15–30s. Ensure headers and initial chunk are dispatched immediately. |
-| **Model Naming** | Hardcoding deprecated model strings like `gemini-pro` or `gemini-1.0-pro` | Use current active models: `gemini-2.5-flash` or `gemini-2.0-flash`. Verify active model names in Google AI Studio. |
+| **Model Naming** | Hardcoding deprecated model strings like `gemini-pro` or `gemini-1.0-pro` | Use current active models: `gemini-3.8-flash` or `gemini-2.0-flash`. Verify active model names in Google AI Studio. |
 | **Stream Chunk Encoding** | Enqueuing raw string chunks directly into `ReadableStream` (`controller.enqueue(text)`) | `ReadableStream` requires Uint8Array byte chunks. Always pass text through `new TextEncoder().encode(text)`. |
 | **Client Stream Decoding** | Assuming each stream chunk contains a complete word or sentence | Chunks split words mid-syllable (e.g. `"c"` followed by `"astle"`). Always use `new TextDecoder().decode(value, { stream: true })` to handle multi-byte UTF-8 boundaries. |
 | **HTTP Status after Streaming Starts** | Trying to send `return Response.json({ error }, { status: 500 })` after stream starts | Once HTTP 200 headers are sent, you cannot change the status code. Stream errors must be transmitted in-band or via standard stream cancellation. |
@@ -383,7 +383,7 @@ When pitfalls occur despite prevention, how to recover:
 |---------|---------------|----------------|
 | **Gemini API Key Leaked to GitHub** | MEDIUM | 1. Immediately revoke the compromised key in Google AI Studio.<br>2. Generate a new key and update `.env.local` and Vercel project environment variables.<br>3. Remove key from git history using `git filter-repo` or BFG Repo-Cleaner if accidentally committed.<br>4. Re-verify `.gitignore` includes all `.env*` files. |
 | **Stream Freezes on Vercel (Deployed)** | LOW | 1. Inspect response headers in network tab.<br>2. Add `export const dynamic = 'force-dynamic'` and `export const runtime = 'nodejs'` to route handler.<br>3. Add `X-Accel-Buffering: no` and `Cache-Control: no-cache, no-transform`.<br>4. Redeploy to Vercel. |
-| **Persistent 429 Rate Limit Errors** | LOW | 1. Check Google AI Studio dashboard to confirm quota usage (RPM vs RPD).<br>2. Increase frontend cooldown timer from 4s to 10s.<br>3. Verify client abort signals are properly terminating server generation.<br>4. Switch model target from `gemini-2.0-flash` to `gemini-2.5-flash` or vice versa if one model's free-tier pool is experiencing regional congestion. |
+| **Persistent 429 Rate Limit Errors** | LOW | 1. Check Google AI Studio dashboard to confirm quota usage (RPM vs RPD).<br>2. Increase frontend cooldown timer from 4s to 10s.<br>3. Verify client abort signals are properly terminating server generation.<br>4. Switch model target from `gemini-2.0-flash` to `gemini-3.8-flash` or vice versa if one model's free-tier pool is experiencing regional congestion. |
 | **JSON Parse Failures in UI** | LOW | 1. Remove JSON response mode from Gemini SDK config.<br>2. Refactor system prompt to request Markdown sections (`# Title`, `### Section`).<br>3. Replace `JSON.parse` streaming logic on client with raw string decoding and Markdown rendering. |
 
 ---

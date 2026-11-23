@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
     const prompt = buildStoryPrompt(body);
 
     const responseStream = await ai.models.generateContentStream({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.8-flash',
       contents: prompt,
     });
 
@@ -451,7 +451,7 @@ Because the application is stateless and ephemeral (no database or user accounts
    - *Mitigation:* The client UI must provide clear feedback when rate limits are approached, disable duplicate clicks on the generate button while a request is pending, and present friendly retry counters if a 429 response is received from the API route.
 2. **Second Bottleneck: Serverless Function Timeout:**
    - *Problem:* Default serverless execution timeouts on free platforms can abort long stories.
-   - *Mitigation:* Explicitly set `export const maxDuration = 60` in the route handler, use the lightweight, fast `gemini-2.5-flash` model (which generates 100+ tokens per second, completing stories in 4-8 seconds), and stream chunks immediately via `ReadableStream` rather than waiting for completion.
+   - *Mitigation:* Explicitly set `export const maxDuration = 60` in the route handler, use the lightweight, fast `gemini-3.8-flash` model (which generates 100+ tokens per second, completing stories in 4-8 seconds), and stream chunks immediately via `ReadableStream` rather than waiting for completion.
 
 ---
 
@@ -489,7 +489,7 @@ Because the application is stateless and ephemeral (no database or user accounts
 
 | Service | Integration Pattern | Notes |
 |---------|---------------------|-------|
-| **Google Gemini API** (`@google/genai`) | Server-to-server HTTPS via SDK streaming method `ai.models.generateContentStream` | Uses `gemini-2.5-flash`. Key configured in `.env.local`. Rate limited to 15 RPM on free tier. |
+| **Google Gemini API** (`@google/genai`) | Server-to-server HTTPS via SDK streaming method `ai.models.generateContentStream` | Uses `gemini-3.8-flash`. Key configured in `.env.local`. Rate limited to 15 RPM on free tier. |
 | **Vercel Serverless Platform** | Node.js Serverless Function runtime (`maxDuration = 60`) | Fluid Compute enables chunked streaming without premature socket termination. |
 
 ### Internal Boundaries

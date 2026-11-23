@@ -23,11 +23,11 @@ The core architectural choice is **Next.js 16 (App Router)** paired directly wit
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
 | **Next.js (App Router)** | `^16.4.6` | Full-stack React application framework | Provides server-side Route Handlers (`app/api/generate/route.ts`) to safeguard the `GEMINI_API_KEY` away from client browser inspection. Delivers first-class support for Web Streams (`ReadableStream`) for real-time text delivery, optimized React 19 server/client component boundaries, and seamless zero-configuration deployment to Vercel. |
-| **`@google/genai`** | `^3.6.1` | Official unified Google Gen AI SDK for Node.js / TypeScript | The current, production-grade SDK from Google (source: `googleapis/js-genai`) replacing the deprecated `@google/generative-ai` package. Offers streamlined initialization (`new GoogleGenAI({ apiKey })`), direct support for `gemini-2.5-flash`, and clean async generator streaming (`ai.models.generateContentStream`). |
+| **`@google/genai`** | `^3.6.1` | Official unified Google Gen AI SDK for Node.js / TypeScript | The current, production-grade SDK from Google (source: `googleapis/js-genai`) replacing the deprecated `@google/generative-ai` package. Offers streamlined initialization (`new GoogleGenAI({ apiKey })`), direct support for `gemini-3.8-flash`, and clean async generator streaming (`ai.models.generateContentStream`). |
 | **React & React DOM** | `^19.3.1` | Core UI component and rendering engine | Shipped natively with Next.js 16. Idiomatic hooks (`useState`, `useRef`, `useCallback`) effortlessly manage dynamic character form arrays, genre badge selection, stream buffer accumulation, and clipboard state without heavy external state libraries. |
 | **Tailwind CSS** | `^4.3.5` | Utility-first CSS styling framework | Tailwind v4 introduces a streamlined CSS-first architecture (`@import "tailwindcss";`) with a high-performance Rust-based engine, completely eliminating cumbersome `tailwind.config.js` files while enabling rapid assembly of responsive story cards, loading states, and badge controls. |
 | **TypeScript** | `^5.7.x` | Static typing and compile-time contract enforcement | Establishes unambiguous type contracts for narrative requests (character schemas, genre unions, fallback states) and stream chunk event envelopes, eliminating runtime shape mismatches and spelling regressions. |
-| **Google Gemini Model** | `gemini-2.5-flash` | Generative AI LLM engine | Google's premier lightweight, low-latency Flash model. Optimized for rapid creative reasoning, structured narrative flow, and high-speed streaming. Features generous free-tier quotas (up to 15 RPM, 1M TPM, 1,500 RPD) with zero cost. |
+| **Google Gemini Model** | `gemini-3.8-flash` | Generative AI LLM engine | Google's premier lightweight, low-latency Flash model. Optimized for rapid creative reasoning, structured narrative flow, and high-speed streaming. Features generous free-tier quotas (up to 15 RPM, 1M TPM, 1,500 RPD) with zero cost. |
 
 ---
 
@@ -123,7 +123,7 @@ export const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-export const DEFAULT_STORY_MODEL = 'gemini-2.5-flash';
+export const DEFAULT_STORY_MODEL = 'gemini-3.8-flash';
 ```
 
 ---

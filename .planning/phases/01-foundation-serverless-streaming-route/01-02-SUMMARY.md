@@ -32,7 +32,7 @@ key-files:
   modified: []
 
 key-decisions:
-  - "Used official @google/genai SDK with default model gemini-2.5-flash on standard Node.js serverless runtime"
+  - "Used official @google/genai SDK with default model gemini-3.8-flash on standard Node.js serverless runtime"
   - "Enforced export const runtime = 'nodejs', export const dynamic = 'force-dynamic', and maxDuration = 60 to prevent Vercel edge isolate failures and proxy stream buffering"
   - "Added explicit anti-buffering headers (X-Accel-Buffering: no, Cache-Control: no-cache, no-transform, Transfer-Encoding: chunked)"
   - "Implemented dual-layer rate limit handling: pre-stream 429 JSON response and in-band markdown notification on mid-stream exhaustion"
@@ -114,7 +114,7 @@ status: complete
 - **Files created:** 3
 
 ## Accomplishments
-- Implemented `src/lib/gemini.ts` initializing `@google/genai` with default model `gemini-2.5-flash`.
+- Implemented `src/lib/gemini.ts` initializing `@google/genai` with default model `gemini-3.8-flash`.
 - Built `src/app/api/generate/route.ts` as a Node.js serverless route handler streaming text chunks directly to the browser via Web `ReadableStream`.
 - Configured anti-buffering headers (`X-Accel-Buffering: no`, `Cache-Control: no-cache, no-transform`, `Transfer-Encoding: chunked`) to guarantee real-time token delivery on Vercel and reverse proxies.
 - Dual-layer error handling: pre-stream 429 returns structured HTTP 429 JSON; mid-stream quota drops or safety stops enqueue graceful in-band notices without socket drops.

@@ -12,7 +12,7 @@ A client can send an HTTP POST request to `/api/generate` with an optional premi
 | Decision | Choice | Rationale |
 |---|---|---|
 | Framework | Next.js 16 (App Router) | Native Node.js Serverless Route Handlers, Web Standard `ReadableStream`, React 19 compatibility, zero-cost Vercel deployment |
-| AI SDK | `@google/genai` (^3.6.1) | Official modern unified Google Gen AI SDK; native async generator streaming (`generateContentStream`), direct support for `gemini-2.5-flash` |
+| AI SDK | `@google/genai` (^3.6.1) | Official modern unified Google Gen AI SDK; native async generator streaming (`generateContentStream`), direct support for `gemini-3.8-flash` |
 | Streaming Protocol | Web `ReadableStream` over HTTP POST | Native browser and server standard; chunked transfer encoding without WebSocket or SSE infrastructure overhead |
 | Styling | Tailwind CSS v4 (`@tailwindcss/postcss`, `@tailwindcss/typography`) | CSS-first configuration, zero JS config file, built-in prose formatting for story rendering |
 | Testing Harness | Vitest (^5.1.1) | Fast native TypeScript execution and route handler mocking with zero SWC/Babel configuration |

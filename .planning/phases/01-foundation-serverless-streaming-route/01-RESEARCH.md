@@ -89,7 +89,7 @@ This route satisfies three primary technical mandates:
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | **`next`** | `^16.4.6` `[VERIFIED: npm registry]` | Full-stack React application framework | Standard App Router route handlers, native Web `ReadableStream` response streaming, Vercel zero-config serverless deployment. |
-| **`@google/genai`** | `^3.6.1` `[VERIFIED: npm registry]` | Official unified Google Gen AI SDK | Modern production SDK (replacing legacy `@google/generative-ai`), supporting `gemini-2.5-flash` with async generator streaming (`ai.models.generateContentStream`). |
+| **`@google/genai`** | `^3.6.1` `[VERIFIED: npm registry]` | Official unified Google Gen AI SDK | Modern production SDK (replacing legacy `@google/generative-ai`), supporting `gemini-3.8-flash` with async generator streaming (`ai.models.generateContentStream`). |
 | **`react`** | `^19.3.1` `[VERIFIED: npm registry]` | UI component library | Native peer dependency for Next.js 16. |
 | **`react-dom`** | `^19.3.1` `[VERIFIED: npm registry]` | DOM renderer for React | Required companion for React 19. |
 | **`typescript`** | `^5.7.x` `[VERIFIED: npm registry]` | Static type checking | Compile-time contract enforcement for request schemas, genre unions, and stream chunks. |
@@ -171,7 +171,7 @@ Client / External Test
 │    Bind req.signal to internal AbortController                              │
 │                     ▼                                                       │
 │ 3. Invoke GoogleGenAI SDK                                                   │
-│    ai.models.generateContentStream({ model: 'gemini-2.5-flash', ... })      │
+│    ai.models.generateContentStream({ model: 'gemini-3.8-flash', ... })      │
 │    Caught 429 Pre-Stream? ──────────────────────► Return HTTP 429 JSON      │
 │                     │ Success (responseStream acquired)                     │
 │ 4. Construct Native Web ReadableStream                                      │
@@ -389,7 +389,7 @@ export async function POST(req: NextRequest) {
 // [CITED: github.com/googleapis/js-genai]
 import { GoogleGenAI } from '@google/genai';
 
-export const DEFAULT_STORY_MODEL = 'gemini-2.5-flash';
+export const DEFAULT_STORY_MODEL = 'gemini-3.8-flash';
 
 export function getGeminiClient(): GoogleGenAI {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -453,7 +453,7 @@ export interface ApiErrorResponse {
 | `@google/generative-ai` | `@google/genai` | Late 2024 / 2025 | Unified Google Gen AI SDK across Node/TS, replacing legacy package. |
 | `tailwind.config.js` | `@import "tailwindcss";` in CSS | 2025 (Tailwind v4) | Zero JavaScript configuration file required; CSS-first theme configuration. |
 | Next.js Pages API (`pages/api/*.ts`) | Next.js App Router Route Handlers (`app/api/*/route.ts`) | Next.js 13+ (Standardized in 15/16) | Native Web Standards (`Request`, `Response`, `ReadableStream`) replacing Node-specific `req` / `res`. |
-| `gemini-1.5-flash` / `gemini-pro` | `gemini-2.5-flash` | 2025 | Faster TTFT, improved narrative reasoning, high free-tier throughput. |
+| `gemini-1.5-flash` / `gemini-pro` | `gemini-3.8-flash` | 2025 | Faster TTFT, improved narrative reasoning, high free-tier throughput. |
 
 ---
 
@@ -461,7 +461,7 @@ export interface ApiErrorResponse {
 
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
-| A1 | Vercel Hobby free tier Serverless Functions allow `maxDuration = 60` for streaming responses `[ASSUMED]` | Serverless Execution Config | If restricted to 15s or 30s on certain plans, stories must be generated within 15 seconds (gemini-2.5-flash generates ~100 tokens/sec, finishing 500-word stories in 5-8s, well within limits). |
+| A1 | Vercel Hobby free tier Serverless Functions allow `maxDuration = 60` for streaming responses `[ASSUMED]` | Serverless Execution Config | If restricted to 15s or 30s on certain plans, stories must be generated within 15 seconds (gemini-3.8-flash generates ~100 tokens/sec, finishing 500-word stories in 5-8s, well within limits). |
 
 ---
 

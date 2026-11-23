@@ -26,7 +26,7 @@ The stack is optimized for beginner friendliness, minimal abstraction layers, an
 **Core technologies:**
 - **Next.js 16 (App Router) (`^16.4.6`):** Provides React 19 server/client boundaries and server-side Route Handlers (`app/api/generate/route.ts`) to safeguard the `GEMINI_API_KEY` and stream HTTP responses.
 - **`@google/genai` (`^3.6.1`):** Official unified Google Gen AI SDK for Node.js, replacing the deprecated `@google/generative-ai` package and providing native streaming via `ai.models.generateContentStream`.
-- **Google Gemini Model (`gemini-2.5-flash`):** Google's high-speed, low-latency creative reasoning model offering generous free-tier quotas (15 RPM, 1M TPM, 1,500 RPD) at zero cost.
+- **Google Gemini Model (`gemini-3.8-flash`):** Google's high-speed, low-latency creative reasoning model offering generous free-tier quotas (15 RPM, 1M TPM, 1,500 RPD) at zero cost.
 - **React & React DOM (`^19.3.1`):** Native React 19 hooks (`useState`, `useRef`, `useCallback`) managing dynamic character arrays, badge selectors, stream buffers, and clipboard actions without global store overhead.
 - **Tailwind CSS (`^4.3.5`) & `@tailwindcss/typography` (`^0.5.20`):** Modern CSS-first utility styling with automatic prose formatting for storybook typography, completely eliminating legacy `tailwind.config.js` configuration.
 - **`react-markdown` (`^10.1.0`):** AST-based Markdown parser for safely rendering streamed headings, dialogue quotes, and narrative prose without `dangerouslySetInnerHTML`.
@@ -196,7 +196,7 @@ Based on the technical dependencies, component boundaries, and risk mitigation s
 ### Gaps to Address
 
 No blocking technical gaps remain. The following minor considerations should be validated during implementation:
-- **Free-Tier Quota Congestion:** If Google Gemini's `gemini-2.5-flash` experiences transient regional rate limits during testing, switching the model constant to `gemini-2.0-flash` in `lib/constants.ts` serves as an instant zero-code fallback.
+- **Free-Tier Quota Congestion:** If Google Gemini's `gemini-3.8-flash` experiences transient regional rate limits during testing, switching the model constant to `gemini-2.0-flash` in `lib/constants.ts` serves as an instant zero-code fallback.
 - **Mobile Clipboard Permissions:** Ensure `navigator.clipboard.writeText` includes a standard fallback for older mobile browser WebViews that restrict asynchronous clipboard writes.
 
 ---

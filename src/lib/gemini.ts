@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 
-export const DEFAULT_STORY_MODEL = 'gemini-2.5-flash';
+export const DEFAULT_STORY_MODEL = 'gemini-3.8-flash';
 
 /**
  * Returns an initialized Google Gen AI client.

@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getGeminiClient, DEFAULT_STORY_MODEL } from '@/lib/gemini';
+import {
+  FALLBACK_MODEL_CHAIN,
+  getFriendlyGeminiError,
+  getGeminiClient,
+  parseGeminiError,
+  type GeminiErrorInfo,
+} from '@/lib/gemini';
 import { buildStoryPrompt, STORY_SYSTEM_INSTRUCTION } from '@/lib/prompts';
 import type { StoryRequest, ApiErrorResponse } from '@/types/story';
 
@@ -32,40 +38,45 @@ export async function POST(req: NextRequest) {
     abortController.abort();
   });
 
-  // 4. Pre-stream Gemini API call with rate-limit and error trapping
+  // 4. Pre-stream Gemini API call with automatic model fallback
   let responseStream;
-  try {
-    const ai = getGeminiClient();
-    responseStream = await ai.models.generateContentStream({
-      model: DEFAULT_STORY_MODEL,
-      contents: prompt,
-      config: {
-        systemInstruction: STORY_SYSTEM_INSTRUCTION,
-        abortSignal: abortController.signal,
-      },
-    });
-  } catch (err: unknown) {
-    const errObj = err as { status?: number; message?: string };
-    const errMessage = String(errObj?.message || err || '');
-    const isRateLimit =
-      errObj?.status === 429 ||
-      errMessage.includes('429') ||
-      errMessage.includes('RESOURCE_EXHAUSTED');
+  let lastErrorInfo: GeminiErrorInfo | null = null;
+  const ai = getGeminiClient();
 
-    if (isRateLimit) {
-      const errorBody: ApiErrorResponse = {
-        error:
-          'The storyteller is taking a breath! Gemini free-tier rate limit reached. Please wait a few seconds and try again.',
-        code: 'RATE_LIMIT_EXHAUSTED',
-      };
-      return NextResponse.json(errorBody, { status: 429 });
+  for (const model of FALLBACK_MODEL_CHAIN) {
+    try {
+      responseStream = await ai.models.generateContentStream({
+        model,
+        contents: prompt,
+        config: {
+          systemInstruction: STORY_SYSTEM_INSTRUCTION,
+          abortSignal: abortController.signal,
+        },
+      });
+      break;
+    } catch (err: unknown) {
+      const info = parseGeminiError(err);
+      lastErrorInfo = info;
+      if (info.kind === 'rate-limit' || !info.retryable) {
+        const friendly = getFriendlyGeminiError(info);
+        const errorBody: ApiErrorResponse = {
+          error: friendly.message,
+          code: friendly.code,
+        };
+        return NextResponse.json(errorBody, { status: friendly.status });
+      }
     }
+  }
 
+  if (!responseStream) {
+    const friendly = getFriendlyGeminiError(
+      lastErrorInfo ?? { status: 503, kind: 'unavailable', retryable: true }
+    );
     const errorBody: ApiErrorResponse = {
-      error: errObj?.message || 'Story generation failed',
-      code: 'GENERATION_ERROR',
+      error: friendly.message,
+      code: friendly.code,
     };
-    return NextResponse.json(errorBody, { status: 500 });
+    return NextResponse.json(errorBody, { status: 503 });
   }
 
   // 5. Construct native Web ReadableStream

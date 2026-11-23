@@ -5,9 +5,12 @@ import { DEFAULT_STORY_MODEL } from '@/lib/gemini';
 import { buildStoryPrompt, STORY_SYSTEM_INSTRUCTION } from '@/lib/prompts';
 import { GoogleGenAI } from '@google/genai';
 
+const { mockGenerateContentStream } = vi.hoisted(() => ({
+  mockGenerateContentStream: vi.fn(),
+}));
+
 // Mock the @google/genai SDK
 vi.mock('@google/genai', () => {
-  const mockGenerateContentStream = vi.fn();
   const MockGoogleGenAI = vi.fn().mockImplementation(() => ({
     models: {
       generateContentStream: mockGenerateContentStream,
@@ -21,8 +24,20 @@ vi.mock('@google/genai', () => {
 describe('POST /api/generate Route Handler', () => {
   const originalEnv = process.env;
 
+  const makeGoogleError = (status: number, reason: string) => ({
+    message: `${status} ${reason}`,
+    status,
+    code: status,
+    error: {
+      code: status,
+      status: reason,
+      errors: [{ message: `${status} ${reason}`, reason }],
+    },
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGenerateContentStream.mockReset();
     process.env = { ...originalEnv };
   });
 
@@ -213,5 +228,104 @@ describe('POST /api/generate Route Handler', () => {
     const text = await res.text();
     expect(text).toContain('Beginning of the adventure...');
     expect(text).toContain('catching its breath! Gemini rate limit reached');
+  });
+
+  it('falls back to gemini-3.8-flash-lite after a pre-stream 503', async () => {
+    process.env.GEMINI_API_KEY = 'test-api-key';
+
+    async function* recoveredStream() {
+      yield { text: 'A fallback tale.' };
+    }
+
+    mockGenerateContentStream
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
+      .mockResolvedValueOnce(recoveredStream());
+
+    const req = new NextRequest('http://localhost:3000/api/generate', {
+      method: 'POST',
+      body: JSON.stringify({ premise: 'A patient fox' }),
+    });
+
+    const res = await POST(req);
+
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe('A fallback tale.');
+    expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
+    expect(mockGenerateContentStream.mock.calls[0]?.[0].model).toBe('gemini-3.8-flash');
+    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.8-flash-lite');
+  });
+
+  it('retries the next model after a pre-stream 404', async () => {
+    process.env.GEMINI_API_KEY = 'test-api-key';
+
+    async function* recoveredStream() {
+      yield { text: 'A provisioned tale.' };
+    }
+
+    mockGenerateContentStream
+      .mockRejectedValueOnce(makeGoogleError(404, 'NOT_FOUND'))
+      .mockResolvedValueOnce(recoveredStream());
+
+    const req = new NextRequest('http://localhost:3000/api/generate', {
+      method: 'POST',
+      body: JSON.stringify({ premise: 'A careful owl' }),
+    });
+
+    const res = await POST(req);
+
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe('A provisioned tale.');
+    expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
+    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.8-flash-lite');
+  });
+
+  it('returns a clean 503 message when every model fails with 503', async () => {
+    process.env.GEMINI_API_KEY = 'test-api-key';
+
+    mockGenerateContentStream
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'));
+
+    const req = new NextRequest('http://localhost:3000/api/generate', {
+      method: 'POST',
+      body: JSON.stringify({ premise: 'A stubborn badger' }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(503);
+
+    const data = await res.json();
+    expect(data.code).toBe('GENERATION_ERROR');
+    expect(data.error).toBe(
+      'The storyteller is swamped by high demand right now. Please try again in a moment.'
+    );
+    expect(mockGenerateContentStream).toHaveBeenCalledTimes(3);
+    expect(mockGenerateContentStream.mock.calls.map((call) => call[0].model)).toEqual([
+      'gemini-3.8-flash',
+      'gemini-3.8-flash-lite',
+      'gemini-2.5-flash-lite',
+    ]);
+  });
+
+  it('stops the fallback chain on 429 with a friendly rate-limit response', async () => {
+    process.env.GEMINI_API_KEY = 'test-api-key';
+
+    mockGenerateContentStream
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
+      .mockRejectedValueOnce(makeGoogleError(429, 'RESOURCE_EXHAUSTED'));
+
+    const req = new NextRequest('http://localhost:3000/api/generate', {
+      method: 'POST',
+      body: JSON.stringify({ premise: 'A tired hare' }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(429);
+
+    const data = await res.json();
+    expect(data.code).toBe('RATE_LIMIT_EXHAUSTED');
+    expect(data.error).toContain('taking a breath');
+    expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
   });
 });

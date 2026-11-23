@@ -44,7 +44,10 @@ Plans:
   1. System generates a complete, coherent story even when provided with partial or completely empty inputs by intelligently synthesizing missing characters, genre, or premise
   2. Generated stories strictly follow a 4-part classical narrative structure featuring a title, beginning, middle, climax, and conclusion
   3. System streams story text progressively in real time as chunks arrive from the Gemini API
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 02-01-PLAN.md — Narrative prompt engine, intelligent fallback inference, 4-part structure, and API route wiring
 
 ### Phase 3: Story Configuration & Character Builder
 **Goal**: Allow users to configure characters, genres, and premises through responsive form components
@@ -90,7 +93,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Serverless Streaming Route | 2/2 | Complete | 2026-11-24 |
-| 2. Narrative Prompt Engine & Intelligent Fallback Generation | 0/TBD | Not started | - |
+| 2. Narrative Prompt Engine & Intelligent Fallback Generation | 0/1 | Ready to execute | - |
 | 3. Story Configuration & Character Builder | 0/TBD | Not started | - |
 | 4. Story Reader Canvas & Clipboard Controls | 0/TBD | Not started | - |
 | 5. Story Regeneration, Surprise Mode & Production Deployment | 0/TBD | Not started | - |

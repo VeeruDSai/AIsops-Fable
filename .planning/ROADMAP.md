@@ -13,7 +13,7 @@ StoryForge AI is an interactive, zero-cost story generation web application powe
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Serverless Streaming Route** - Secure serverless Gemini streaming route handler with anti-buffering headers and rate-limit handling
-- [ ] **Phase 2: Narrative Prompt Engine & Intelligent Fallback Generation** - Classical 4-part story generation with automatic fallback inference for partial or empty inputs
+- [x] **Phase 2: Narrative Prompt Engine & Intelligent Fallback Generation** - Classical 4-part story generation with automatic fallback inference for partial or empty inputs
 - [ ] **Phase 3: Story Configuration & Character Builder** - Interactive character management, 8-genre selector, and premise input controls
 - [ ] **Phase 4: Story Reader Canvas & Clipboard Controls** - Typographic story reader canvas with real-time Markdown rendering and one-click copy feedback
 - [ ] **Phase 5: Story Regeneration, Surprise Mode & Production Deployment** - Dedicated Surprise Me mode, one-click regeneration with cooldowns, and live Vercel free-tier deployment
@@ -47,7 +47,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md — Narrative prompt engine, intelligent fallback inference, 4-part structure, and API route wiring
+- [x] 02-01-PLAN.md — Narrative prompt engine, intelligent fallback inference, 4-part structure, and API route wiring
 
 ### Phase 3: Story Configuration & Character Builder
 **Goal**: Allow users to configure characters, genres, and premises through responsive form components
@@ -58,8 +58,11 @@ Plans:
   1. User can dynamically add, edit, and remove multiple characters with custom names and optional roles or traits
   2. User can select a genre from 8 curated genre badges (Fantasy, Sci-Fi, Horror, Romance, Mystery, Adventure, Comedy, Thriller) with active visual selection state
   3. User can input an optional story premise or plot seed in an accessible, styled text area
-**Plans**: TBD
+**Plans**: 1 plan
 **UI hint**: yes
+
+Plans:
+- [x] 03-01-PLAN.md — Character builder, 8-genre selector, premise input, and streaming generation form
 
 ### Phase 4: Story Reader Canvas & Clipboard Controls
 **Goal**: Display streamed stories in a responsive reader canvas with formatted typography and one-click copy
@@ -93,7 +96,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Serverless Streaming Route | 2/2 | Complete | 2026-11-24 |
-| 2. Narrative Prompt Engine & Intelligent Fallback Generation | 0/1 | Ready to execute | - |
-| 3. Story Configuration & Character Builder | 0/TBD | Not started | - |
+| 2. Narrative Prompt Engine & Intelligent Fallback Generation | 1/1 | Complete | 2026-11-24 |
+| 3. Story Configuration & Character Builder | 1/1 | Verification pending | - |
 | 4. Story Reader Canvas & Clipboard Controls | 0/TBD | Not started | - |
 | 5. Story Regeneration, Surprise Mode & Production Deployment | 0/TBD | Not started | - |

@@ -9,16 +9,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Inputs & Characters
 
-- [ ] **INPT-01**: User can add, edit, and remove multiple characters with a name and optional role/trait
-- [ ] **INPT-02**: User can select a story genre from 8 curated genres (Fantasy, Sci-Fi, Horror, Romance, Mystery, Adventure, Comedy, Thriller)
-- [ ] **INPT-03**: User can provide an optional story premise or short plot description
+- [x] **INPT-01**: User can add, edit, and remove multiple characters with a name and optional role/trait
+- [x] **INPT-02**: User can select a story genre from 8 curated genres (Fantasy, Sci-Fi, Horror, Romance, Mystery, Adventure, Comedy, Thriller)
+- [x] **INPT-03**: User can provide an optional story premise or short plot description
 
 ### AI Story Generation
 
-- [ ] **GENR-01**: User can generate a story with full, partial, or completely empty inputs, with the AI automatically and coherently inventing any missing details
+- [x] **GENR-01**: User can generate a story with full, partial, or completely empty inputs, with the AI automatically and coherently inventing any missing details
 - [ ] **GENR-02**: User can click a dedicated "Surprise Me" button to generate a completely randomized story without relying on form inputs
-- [ ] **GENR-03**: System generates stories following a 4-part classical narrative structure: Title, Beginning, Middle, Climax, and Conclusion
-- [ ] **GENR-04**: System streams story text progressively in real time as chunks arrive from Gemini API
+- [x] **GENR-03**: System generates stories following a 4-part classical narrative structure: Title, Beginning, Middle, Climax, and Conclusion
+- [x] **GENR-04**: System streams story text progressively in real time as chunks arrive from Gemini API
 
 ### Reading & Story Controls
 
@@ -63,13 +63,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INPT-01 | Phase 3 | Pending |
-| INPT-02 | Phase 3 | Pending |
-| INPT-03 | Phase 3 | Pending |
-| GENR-01 | Phase 2 | Pending |
+| INPT-01 | Phase 3 | Complete |
+| INPT-02 | Phase 3 | Complete |
+| INPT-03 | Phase 3 | Complete |
+| GENR-01 | Phase 2 | Complete |
 | GENR-02 | Phase 5 | Pending |
-| GENR-03 | Phase 2 | Pending |
-| GENR-04 | Phase 2 | Pending |
+| GENR-03 | Phase 2 | Complete |
+| GENR-04 | Phase 2 | Complete |
 | DISP-01 | Phase 4 | Pending |
 | DISP-02 | Phase 4 | Pending |
 | DISP-03 | Phase 5 | Pending |
@@ -84,4 +84,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-11-24*
-*Last updated: 2026-11-24 after roadmap traceability mapping*
+*Last updated: 2026-11-24 after Phase 3 implementation*

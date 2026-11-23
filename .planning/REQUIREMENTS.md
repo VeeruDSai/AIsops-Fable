@@ -63,25 +63,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INPT-01 | TBD | Pending |
-| INPT-02 | TBD | Pending |
-| INPT-03 | TBD | Pending |
-| GENR-01 | TBD | Pending |
-| GENR-02 | TBD | Pending |
-| GENR-03 | TBD | Pending |
-| GENR-04 | TBD | Pending |
-| DISP-01 | TBD | Pending |
-| DISP-02 | TBD | Pending |
-| DISP-03 | TBD | Pending |
-| TECH-01 | TBD | Pending |
-| TECH-02 | TBD | Pending |
-| TECH-03 | TBD | Pending |
+| INPT-01 | Phase 3 | Pending |
+| INPT-02 | Phase 3 | Pending |
+| INPT-03 | Phase 3 | Pending |
+| GENR-01 | Phase 2 | Pending |
+| GENR-02 | Phase 5 | Pending |
+| GENR-03 | Phase 2 | Pending |
+| GENR-04 | Phase 2 | Pending |
+| DISP-01 | Phase 4 | Pending |
+| DISP-02 | Phase 4 | Pending |
+| DISP-03 | Phase 5 | Pending |
+| TECH-01 | Phase 1 | Pending |
+| TECH-02 | Phase 1 | Pending |
+| TECH-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️ (Will be mapped in Roadmap)
+- Mapped to phases: 13
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-11-24*
-*Last updated: 2026-11-24 after initial definition*
+*Last updated: 2026-11-24 after roadmap traceability mapping*

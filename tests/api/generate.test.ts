@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/generate/route';
+import { DEFAULT_STORY_MODEL } from '@/lib/gemini';
+import { buildStoryPrompt, STORY_SYSTEM_INSTRUCTION } from '@/lib/prompts';
 import { GoogleGenAI } from '@google/genai';
 
 // Mock the @google/genai SDK
@@ -60,6 +62,15 @@ describe('POST /api/generate Route Handler', () => {
 
     const res = await POST(req);
 
+    expect(ai.models.generateContentStream).toHaveBeenCalledWith({
+      model: DEFAULT_STORY_MODEL,
+      contents: buildStoryPrompt({ premise: 'A tale of an owl' }),
+      config: expect.objectContaining({
+        systemInstruction: STORY_SYSTEM_INSTRUCTION,
+        abortSignal: expect.any(AbortSignal),
+      }),
+    });
+
     // Verify status & anti-buffering headers
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('text/plain');
@@ -70,6 +81,40 @@ describe('POST /api/generate Route Handler', () => {
     // Read full stream text
     const text = await res.text();
     expect(text).toBe('Once upon a time.');
+  });
+
+  it('passes full story requests through the narrative prompt engine', async () => {
+    process.env.GEMINI_API_KEY = 'test-api-key';
+
+    async function* mockStream() {
+      yield { text: '# The Lantern Keeper' };
+    }
+
+    const ai = new (GoogleGenAI as unknown as { new (): any })();
+    ai.models.generateContentStream.mockResolvedValue(mockStream());
+
+    const body = {
+      characters: [{ id: '1', name: 'Mira', role: 'a lamp keeper' }],
+      genre: 'Mystery',
+      premise: 'A lantern goes out at the same hour every night.',
+    };
+
+    const req = new NextRequest('http://localhost:3000/api/generate', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+
+    const res = await POST(req);
+
+    expect(ai.models.generateContentStream).toHaveBeenCalledWith(
+      expect.objectContaining({
+        contents: buildStoryPrompt(body),
+        config: expect.objectContaining({
+          systemInstruction: STORY_SYSTEM_INSTRUCTION,
+        }),
+      })
+    );
+    expect(await res.text()).toBe('# The Lantern Keeper');
   });
 
   it('handles 429 rate limit before stream initiation', async () => {

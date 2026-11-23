@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getGeminiClient, DEFAULT_STORY_MODEL } from '@/lib/gemini';
+import { buildStoryPrompt, STORY_SYSTEM_INSTRUCTION } from '@/lib/prompts';
 import type { StoryRequest, ApiErrorResponse } from '@/types/story';
 
 // Ensure standard Node.js runtime for @google/genai compatibility (avoids Vercel Edge isolates)
@@ -23,9 +24,7 @@ export async function POST(req: NextRequest) {
 
   // 2. Parse request body safely
   const body: StoryRequest = await req.json().catch(() => ({}));
-  const prompt =
-    body.premise?.trim() ||
-    'Write an engaging, imaginative short fable with a clear beginning, middle, climax, and moral conclusion.';
+  const prompt = buildStoryPrompt(body);
 
   // 3. Bind client disconnect to an AbortController to prevent zombie token burn
   const abortController = new AbortController();
@@ -41,6 +40,7 @@ export async function POST(req: NextRequest) {
       model: DEFAULT_STORY_MODEL,
       contents: prompt,
       config: {
+        systemInstruction: STORY_SYSTEM_INSTRUCTION,
         abortSignal: abortController.signal,
       },
     });

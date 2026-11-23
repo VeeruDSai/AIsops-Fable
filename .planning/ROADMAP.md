@@ -12,7 +12,7 @@ StoryForge AI is an interactive, zero-cost story generation web application powe
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation & Serverless Streaming Route** - Secure serverless Gemini streaming route handler with anti-buffering headers and rate-limit handling
+- [x] **Phase 1: Foundation & Serverless Streaming Route** - Secure serverless Gemini streaming route handler with anti-buffering headers and rate-limit handling
 - [ ] **Phase 2: Narrative Prompt Engine & Intelligent Fallback Generation** - Classical 4-part story generation with automatic fallback inference for partial or empty inputs
 - [ ] **Phase 3: Story Configuration & Character Builder** - Interactive character management, 8-genre selector, and premise input controls
 - [ ] **Phase 4: Story Reader Canvas & Clipboard Controls** - Typographic story reader canvas with real-time Markdown rendering and one-click copy feedback
@@ -32,8 +32,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Next.js 16 project scaffolding, Tailwind CSS v4 styling, environment security, and Vitest test harness
-- [ ] 01-02-PLAN.md — Serverless Gemini streaming route handler with anti-buffering headers, rate-limit trapping, and automated tests
+- [x] 01-01-PLAN.md — Next.js 16 project scaffolding, Tailwind CSS v4 styling, environment security, and Vitest test harness
+- [x] 01-02-PLAN.md — Serverless Gemini streaming route handler with anti-buffering headers, rate-limit trapping, and automated tests
 
 ### Phase 2: Narrative Prompt Engine & Intelligent Fallback Generation
 **Goal**: Generate structured 4-part classical stories with automatic fallback inference for partial or empty inputs
@@ -89,7 +89,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Serverless Streaming Route | 0/TBD | Not started | - |
+| 1. Foundation & Serverless Streaming Route | 2/2 | Complete | 2026-11-24 |
 | 2. Narrative Prompt Engine & Intelligent Fallback Generation | 0/TBD | Not started | - |
 | 3. Story Configuration & Character Builder | 0/TBD | Not started | - |
 | 4. Story Reader Canvas & Clipboard Controls | 0/TBD | Not started | - |

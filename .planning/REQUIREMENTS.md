@@ -28,8 +28,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Technical & Infrastructure
 
-- [ ] **TECH-01**: Next.js App Router route handler (`/api/generate`) securely executes `@google/genai` calls server-side without exposing `GEMINI_API_KEY`
-- [ ] **TECH-02**: Route handler uses standard Node.js serverless runtime with anti-buffering streaming headers and error handling for 429 rate limits
+- [x] **TECH-01**: Next.js App Router route handler (`/api/generate`) securely executes `@google/genai` calls server-side without exposing `GEMINI_API_KEY`
+- [x] **TECH-02**: Route handler uses standard Node.js serverless runtime with anti-buffering streaming headers and error handling for 429 rate limits
 - [ ] **TECH-03**: Application builds cleanly and is configured for zero-cost deployment on Vercel free tier
 
 ## v2 Requirements
@@ -73,8 +73,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISP-01 | Phase 4 | Pending |
 | DISP-02 | Phase 4 | Pending |
 | DISP-03 | Phase 5 | Pending |
-| TECH-01 | Phase 1 | Pending |
-| TECH-02 | Phase 1 | Pending |
+| TECH-01 | Phase 1 | Complete |
+| TECH-02 | Phase 1 | Complete |
 | TECH-03 | Phase 5 | Pending |
 
 **Coverage:**

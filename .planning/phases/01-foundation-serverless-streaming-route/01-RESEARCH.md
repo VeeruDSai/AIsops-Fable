@@ -465,11 +465,11 @@ export interface ApiErrorResponse {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **How should automated route handler tests mock `@google/genai` in CI without requiring a real API key?**
    - *What we know:* Vitest provides `vi.mock('@google/genai')` to mock `GoogleGenAI` constructor and `generateContentStream` async iterator.
-   - *Recommendation:* Configure Vitest unit tests in `tests/api/generate.test.ts` with mock generators returning test chunks and simulated 429 rejections so the test suite passes 100% offline without burning API quota.
+   - *Recommendation:* RESOLVED: Configure Vitest unit tests in `tests/api/generate.test.ts` with mock generators returning test chunks and simulated 429 rejections so the test suite passes 100% offline without burning API quota.
 
 ---
 

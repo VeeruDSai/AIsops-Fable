@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   FALLBACK_MODEL_CHAIN,
+  GEMMA_MODEL,
   getFriendlyGeminiError,
   getGeminiClient,
   parseGeminiError,
@@ -45,13 +46,16 @@ export async function POST(req: NextRequest) {
 
   for (const model of FALLBACK_MODEL_CHAIN) {
     try {
+      const usesGemmaPrompt = model === GEMMA_MODEL;
       responseStream = await ai.models.generateContentStream({
         model,
-        contents: prompt,
-        config: {
-          systemInstruction: STORY_SYSTEM_INSTRUCTION,
-          abortSignal: abortController.signal,
-        },
+        contents: usesGemmaPrompt ? `${STORY_SYSTEM_INSTRUCTION}\n\n${prompt}` : prompt,
+        config: usesGemmaPrompt
+          ? { abortSignal: abortController.signal }
+          : {
+              systemInstruction: STORY_SYSTEM_INSTRUCTION,
+              abortSignal: abortController.signal,
+            },
       });
       break;
     } catch (err: unknown) {

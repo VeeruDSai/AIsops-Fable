@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/generate/route';
-import { DEFAULT_STORY_MODEL } from '@/lib/gemini';
+import { DEFAULT_STORY_MODEL, FALLBACK_MODEL_CHAIN, GEMMA_MODEL } from '@/lib/gemini';
 import { buildStoryPrompt, STORY_SYSTEM_INSTRUCTION } from '@/lib/prompts';
 import { GoogleGenAI } from '@google/genai';
 
@@ -230,7 +230,7 @@ describe('POST /api/generate Route Handler', () => {
     expect(text).toContain('catching its breath! Gemini rate limit reached');
   });
 
-  it('falls back to gemini-3.8-flash-lite after a pre-stream 503', async () => {
+  it('falls back to gemini-3.7-flash after a pre-stream 503', async () => {
     process.env.GEMINI_API_KEY = 'test-api-key';
 
     async function* recoveredStream() {
@@ -252,7 +252,7 @@ describe('POST /api/generate Route Handler', () => {
     expect(await res.text()).toBe('A fallback tale.');
     expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
     expect(mockGenerateContentStream.mock.calls[0]?.[0].model).toBe('gemini-3.8-flash');
-    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.8-flash-lite');
+    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.7-flash');
   });
 
   it('retries the next model after a pre-stream 404', async () => {
@@ -276,13 +276,14 @@ describe('POST /api/generate Route Handler', () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toBe('A provisioned tale.');
     expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
-    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.8-flash-lite');
+    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.7-flash');
   });
 
   it('returns a clean 503 message when every model fails with 503', async () => {
     process.env.GEMINI_API_KEY = 'test-api-key';
 
     mockGenerateContentStream
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
       .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
       .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
       .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'));
@@ -300,12 +301,43 @@ describe('POST /api/generate Route Handler', () => {
     expect(data.error).toBe(
       'The storyteller is swamped by high demand right now. Please try again in a moment.'
     );
-    expect(mockGenerateContentStream).toHaveBeenCalledTimes(3);
+    expect(mockGenerateContentStream).toHaveBeenCalledTimes(FALLBACK_MODEL_CHAIN.length);
     expect(mockGenerateContentStream.mock.calls.map((call) => call[0].model)).toEqual([
-      'gemini-3.8-flash',
-      'gemini-3.8-flash-lite',
-      'gemini-2.5-flash-lite',
+      ...FALLBACK_MODEL_CHAIN,
     ]);
+  });
+
+  it('prepends the system instruction into the prompt for Gemma fallback', async () => {
+    process.env.GEMINI_API_KEY = 'test-api-key';
+
+    async function* recoveredStream() {
+      yield { text: 'A Gemma tale.' };
+    }
+
+    mockGenerateContentStream
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
+      .mockRejectedValueOnce(makeGoogleError(503, 'UNAVAILABLE'))
+      .mockResolvedValueOnce(recoveredStream());
+
+    const premise = 'A fox and a lantern.';
+    const req = new NextRequest('http://localhost:3000/api/generate', {
+      method: 'POST',
+      body: JSON.stringify({ premise }),
+    });
+
+    const res = await POST(req);
+
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe('A Gemma tale.');
+    expect(mockGenerateContentStream).toHaveBeenCalledTimes(4);
+
+    const gemmaCall = mockGenerateContentStream.mock.calls[3]?.[0];
+    expect(gemmaCall.model).toBe(GEMMA_MODEL);
+    expect(gemmaCall.contents).toContain(STORY_SYSTEM_INSTRUCTION);
+    expect(gemmaCall.contents).toContain(buildStoryPrompt({ premise }));
+    expect(gemmaCall.config.systemInstruction).toBeUndefined();
+    expect(gemmaCall.config.abortSignal).toBeDefined();
   });
 
   it('stops the fallback chain on 429 with a friendly rate-limit response', async () => {

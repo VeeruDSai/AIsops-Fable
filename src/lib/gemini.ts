@@ -3,9 +3,12 @@ import type { ApiErrorResponse } from '@/types/story';
 
 export const FALLBACK_MODEL_CHAIN = [
   'gemini-3.8-flash',
-  'gemini-3.8-flash-lite',
-  'gemini-2.5-flash-lite',
+  'gemini-3.7-flash',
+  'gemini-3.5-flash-lite',
+  'gemma-4-31b-it',
 ] as const;
+
+export const GEMMA_MODEL = 'gemma-4-31b-it';
 
 export const DEFAULT_STORY_MODEL: string = FALLBACK_MODEL_CHAIN[0];
 

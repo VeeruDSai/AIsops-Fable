@@ -1,8 +1,8 @@
 ---
 phase: "1"
 slug: "foundation-serverless-streaming-route"
-status: draft
-nyquist_compliant: false
+status: ready
+nyquist_compliant: true
 wave_0_complete: false
 created: "2026-11-24"
 ---
@@ -17,7 +17,7 @@ created: "2026-11-24"
 
 | Property | Value |
 |----------|-------|
-| **Framework** | Vitest `^5.1.1` |
+| **Framework** | Vitest `^3.0.5` |
 | **Config file** | `vitest.config.ts` |
 | **Quick run command** | `npx vitest run tests/api/generate.test.ts` |
 | **Full suite command** | `npx vitest run` |
@@ -38,12 +38,11 @@ created: "2026-11-24"
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 01-01-01 | 01 | 0 | TECH-01, TECH-02 | — | Vitest and TypeScript test harness configured | unit | `npx vitest --version` | ❌ W0 | ⬜ pending |
-| 01-01-02 | 01 | 1 | TECH-01 | T-01-01 | Serverless Route Handler streams chunks from Gemini without leaking `GEMINI_API_KEY` | integration | `npx vitest run tests/api/generate.test.ts -t "executes Gemini streaming"` | ❌ W0 | ⬜ pending |
-| 01-01-03 | 01 | 1 | TECH-01 | T-01-01 | Missing `GEMINI_API_KEY` returns structured 500 JSON without process crash | unit | `npx vitest run tests/api/generate.test.ts -t "missing API key"` | ❌ W0 | ⬜ pending |
-| 01-01-04 | 01 | 1 | TECH-02 | T-01-02 | Anti-buffering headers present (`X-Accel-Buffering: no`, `Cache-Control: no-cache, no-transform`) | unit | `npx vitest run tests/api/generate.test.ts -t "anti-buffering headers"` | ❌ W0 | ⬜ pending |
-| 01-01-05 | 01 | 1 | TECH-02 | T-01-02 | Traps Gemini `RESOURCE_EXHAUSTED` (429) before stream and returns HTTP 429 JSON | unit | `npx vitest run tests/api/generate.test.ts -t "handles 429 rate limit"` | ❌ W0 | ⬜ pending |
-| 01-01-06 | 01 | 1 | TECH-02 | T-01-02 | Client disconnect signals upstream `AbortController` cleanly | unit | `npx vitest run tests/api/generate.test.ts -t "aborts on client signal"` | ❌ W0 | ⬜ pending |
+| 01-01-01 | 01 | 1 | TECH-01, TECH-02 | T-01-01, T-01-02 | Vitest and Next.js dependencies verified | unit | `node -e "const pkg = require('./package.json'); if (!pkg.dependencies['@google/genai'] || !pkg.devDependencies['vitest']) process.exit(1);"` | ❌ W1 | ⬜ pending |
+| 01-01-02 | 01 | 1 | TECH-01, TECH-02 | — | Next.js App Router and Tailwind v4 compilation | build | `npx next build` | ❌ W1 | ⬜ pending |
+| 01-01-03 | 01 | 1 | TECH-01, TECH-02 | — | Vitest test runner CLI operational | unit | `npx vitest --version` | ❌ W1 | ⬜ pending |
+| 01-02-01 | 02 | 2 | TECH-01, TECH-02 | T-01-01, T-01-04 | Route handler declares Node.js runtime and anti-buffering headers | integration | `node -e "const r = require('fs').readFileSync('src/app/api/generate/route.ts', 'utf8'); if (!r.includes('X-Accel-Buffering') || !r.includes('runtime = \'nodejs\'')) process.exit(1);"` | ❌ W2 | ⬜ pending |
+| 01-02-02 | 02 | 2 | TECH-01, TECH-02 | T-01-03, T-01-05 | Full automated route handler suite: streaming, 500 missing key, 429 rate limit, anti-buffering headers, client abort | integration | `npx vitest run tests/api/generate.test.ts` | ❌ W2 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -51,9 +50,7 @@ created: "2026-11-24"
 
 ## Wave 0 Requirements
 
-- [ ] `vitest.config.ts` — test configuration with path aliases (`@/*` -> `./src/*` or `./*`)
-- [ ] `tests/api/generate.test.ts` — test suite covering TECH-01 and TECH-02
-- [ ] Framework install: `npm install -D vitest`
+Existing test framework not present at start; Plan 01 Wave 1 establishes `vitest.config.ts`, `tests/setup.ts`, and installs `vitest`. Plan 02 Wave 2 creates `tests/api/generate.test.ts`.
 
 ---
 
@@ -67,11 +64,11 @@ created: "2026-11-24"
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 5s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 5s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** verified

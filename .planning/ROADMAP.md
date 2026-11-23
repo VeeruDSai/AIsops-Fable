@@ -29,7 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. Serverless route handler at `/api/generate` accepts requests and streams text chunks from Gemini without exposing `GEMINI_API_KEY` in client bundles
   2. Server streaming uses standard Node.js runtime with explicit anti-buffering headers (`X-Accel-Buffering: no`, `Cache-Control: no-cache, no-transform`)
   3. API quota exhaustion and rate limit errors (429) are trapped and return clear, descriptive error responses
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js 16 project scaffolding, Tailwind CSS v4 styling, environment security, and Vitest test harness
+- [ ] 01-02-PLAN.md — Serverless Gemini streaming route handler with anti-buffering headers, rate-limit trapping, and automated tests
 
 ### Phase 2: Narrative Prompt Engine & Intelligent Fallback Generation
 **Goal**: Generate structured 4-part classical stories with automatic fallback inference for partial or empty inputs

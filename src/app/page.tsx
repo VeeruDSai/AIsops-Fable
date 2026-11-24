@@ -4,7 +4,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#fdfbf7] px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto w-full max-w-5xl space-y-8">
-        <header className="text-center">
+        <header data-print-hide className="text-center">
           <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">
             Instant fables, zero friction
           </span>

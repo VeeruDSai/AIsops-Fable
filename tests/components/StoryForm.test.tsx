@@ -183,4 +183,85 @@ describe('StoryForm', () => {
     expect(JSON.parse(init.body as string)).toEqual({ isSurprise: true });
     expect(await screen.findByText('A surprise.')).toBeDefined();
   });
+
+  it('regenerates with the exact configuration of the last submission', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(textResponse(['# The Moon Fox']))
+      .mockResolvedValueOnce(textResponse(['# The Moon Fox Returns']));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<StoryForm />);
+
+    const regenerate = () => screen.getByRole('button', { name: 'Regenerate' });
+    expect(regenerate()).toHaveProperty('disabled', true);
+
+    await user.type(screen.getByRole('textbox', { name: /^Character 1 name$/ }), 'Mira');
+    await user.click(screen.getByRole('button', { name: 'Mystery' }));
+    await user.type(screen.getByLabelText(/Premise/i), 'A missing moon');
+    await user.click(screen.getByRole('button', { name: 'Generate Story' }));
+
+    expect(await screen.findByText(/The Moon Fox/)).toBeDefined();
+    await waitFor(() => expect(regenerate()).toHaveProperty('disabled', false));
+
+    await user.click(regenerate());
+
+    expect(await screen.findByText(/The Moon Fox Returns/)).toBeDefined();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    const firstPayload = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    const secondPayload = JSON.parse(fetchMock.mock.calls[1][1].body as string);
+    expect(secondPayload).toEqual(firstPayload);
+    expect(secondPayload.genre).toBe('Mystery');
+    expect(secondPayload.premise).toBe('A missing moon');
+  });
+
+  it('regenerates a Surprise Me story without reverting to form inputs', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(textResponse(['A surprise.']))
+      .mockResolvedValueOnce(textResponse(['Another surprise.']));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<StoryForm />);
+
+    await user.type(screen.getByRole('textbox', { name: /^Character 1 name$/ }), 'Mira');
+    await user.click(screen.getByRole('button', { name: 'Surprise Me' }));
+    expect(await screen.findByText('A surprise.')).toBeDefined();
+
+    await user.click(screen.getByRole('button', { name: 'Regenerate' }));
+
+    expect(await screen.findByText('Another surprise.')).toBeDefined();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body as string)).toEqual({ isSurprise: true });
+  });
+
+  it('resets the form fields and the story canvas', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(textResponse(['# The Moon Fox'])));
+    const user = userEvent.setup();
+    render(<StoryForm />);
+
+    const nameInput = () =>
+      screen.getByRole('textbox', { name: /^Character 1 name$/ }) as HTMLInputElement;
+    const premiseInput = () => screen.getByLabelText(/Premise/i) as HTMLTextAreaElement;
+
+    await user.type(nameInput(), 'Mira');
+    await user.click(screen.getByRole('button', { name: 'Mystery' }));
+    await user.type(premiseInput(), 'A missing moon');
+    await user.click(screen.getByRole('button', { name: 'Generate Story' }));
+    expect(await screen.findByText(/The Moon Fox/)).toBeDefined();
+
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
+
+    expect(nameInput().value).toBe('');
+    expect(premiseInput().value).toBe('');
+    expect(screen.getByRole('button', { name: 'Mystery' }).getAttribute('aria-pressed')).toBe(
+      'false'
+    );
+    expect(
+      screen.getByText('Your tale will appear here as it is written.')
+    ).toBeDefined();
+    expect(screen.queryByText(/The Moon Fox/)).toBeNull();
+    expect(screen.getByRole('button', { name: 'Regenerate' })).toHaveProperty('disabled', true);
+  });
 });

@@ -1,12 +1,12 @@
 ---
 gsd_state_version: '1.0'
-status: paused
+status: complete
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 4
-  completed_plans: 4
-  percent: 60
+  completed_phases: 5
+  total_plans: 6
+  completed_plans: 6
+  percent: 100
 ---
 
 # Project State
@@ -16,23 +16,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-11-24)
 
 **Core value:** Generate creative, coherent, and well-structured stories with beginning, middle, climax, and conclusion—even when given minimal or no user input—delivering real-time streaming feedback and seamless regeneration.
-**Current focus:** Phase 4: Story Reader Canvas & Clipboard Controls (ready to plan)
+**Current focus:** Milestone v1 complete (5/5 phases); ready to plan the next milestone
 
 ## Current Position
 
-Phase: 3 of 5 complete (Story Configuration & Character Builder)
-Plan: 03-01 complete (2 tasks, 2 commits)
-Status: Phase 3 UAT/verification complete; ready for Phase 4
-Last activity: 2026-11-24 — Completed quick task 261124-6f3: switched to verified Gemini fallback models and fixed Gemma system-instruction handling; 33/33 tests, typecheck, and build pass
+Phase: 5 of 5 complete (Story Regeneration, Surprise Mode & Production Deployment)
+Plan: 05-01 executed inline (regenerate/reset controls, deployment docs, closeout)
+Status: Milestone v1 complete; all 5 phases shipped
+Last activity: 2026-11-25 — Completed Phase 5: Regenerate replays the last request (including Surprise Me), Reset clears form and canvas, restored .env.example, added README deployment guide; 36/36 tests, typecheck, and build pass
 
-Progress: [██████░░░░] 60%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 11.8 min
-- Total execution time: 0.8 hours
+- Total plans completed: 6
+- Average duration: 11.5 min
+- Total execution time: 1.2 hours
 
 **By Phase:**
 
@@ -41,11 +41,11 @@ Progress: [██████░░░░] 60%
 | 1. Foundation & Serverless Streaming Route | 2 | 25 min | 12.5 min |
 | 2. Narrative Prompt Engine & Intelligent Fallback Generation | 1 | 15 min | 15 min |
 | 3. Story Configuration & Character Builder | 1 | 7 min | 7 min |
-| 4. Story Reader Canvas & Clipboard Controls | - | - | - |
-| 5. Story Regeneration, Surprise Mode & Production Deployment | - | - | - |
+| 4. Story Reader Canvas & Clipboard Controls | 1 | 12 min | 12 min |
+| 5. Story Regeneration, Surprise Mode & Production Deployment | 1 | 10 min | 10 min |
 
 **Recent Trend:**
-- Last 3 plans: 01-02 (pass), 02-01 (pass), 03-01 (pass)
+- Last 3 plans: 03-01 (pass), 04-01 (pass), 05-01 (pass)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -69,10 +69,16 @@ Recent decisions affecting current work:
 - [Quick 261124-4w1]: Switched `DEFAULT_STORY_MODEL` from `gemini-2.5-flash` to `gemini-3.8-flash` without changing the `@google/genai` `generateContentStream` call shape.
 - [Quick 261124-5cy]: Added a pre-stream fallback chain (`gemini-3.8-flash` → `gemini-3.8-flash-lite` → `gemini-2.5-flash-lite`) with 503/404 retry, immediate 429 stop, and static friendly JSON errors; no stream that already emitted text is restarted.
 - [Quick 261124-6f3]: Replaced the invalid fallback entry with the verified chain (`gemini-3.8-flash` → `gemini-3.7-flash` → `gemini-3.5-flash-lite` → `gemma-4-31b-it`); Gemma receives `STORY_SYSTEM_INSTRUCTION` prepended to `contents` because it does not accept `config.systemInstruction`.
+- [Phase 4]: Replaced `StreamingPreview` with `StoryDisplay`, rendering streamed Markdown through `react-markdown` inside Tailwind Typography `prose` classes so `#` titles and `###` stage headings format live.
+- [Phase 4]: Copy Story writes the raw Markdown source via `navigator.clipboard.writeText` and reverts the "Copied!" confirmation after 2000ms; clipboard rejection leaves the idle label.
+- [Phase 4]: Print / Save PDF calls `window.print()`; `@media print` rules in `globals.css` hide every `[data-print-hide]` node (configuration form, reader controls, page header, error alert) so only the story prose prints.
+- [Phase 5]: Regeneration replays the exact last `StoryRequest` held in a ref inside `useStoryGeneration`, so Surprise Me regenerates as Surprise Me instead of falling back to the form values.
+- [Phase 5]: Reset clears form state and calls the hook's `reset()`, which drops the stored last request so a stale Regenerate cannot fire after a clear; all controls stay disabled while streaming to protect the 15 RPM quota.
+- [Phase 5]: Deployment readiness verified rather than changed — `src/app/api/generate/route.ts` already exports `runtime = 'nodejs'` and `maxDuration = 60`; `.env.example` restored with a placeholder key and `README.md` documents local setup plus Vercel Hobby deployment.
 
 ### Pending Todos
 
-- Plan Phase 4 when ready.
+- Plan the next milestone (v2) when ready.
 
 ### Blockers/Concerns
 
@@ -96,6 +102,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-11-24
-Stopped at: Phase 3 complete and verified (5/5 must-haves, UAT closed); quick tasks 261124-4w1, 261124-5cy, and 261124-6f3 completed with all gates passing. Ready for Phase 4.
+Last session: 2026-11-25
+Stopped at: Milestone v1 complete — Phase 5 shipped and verified (36/36 tests, `tsc --noEmit`, and `next build` passing). Ready to plan the next milestone.
 Resume file: None

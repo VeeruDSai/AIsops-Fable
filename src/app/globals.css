@@ -17,3 +17,49 @@ body {
   font-family: var(--font-sans);
   min-height: 100vh;
 }
+
+/* Book-like reading typography for the story reader canvas */
+.story-prose {
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.story-prose h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.story-prose h3 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+/* Print / Save PDF: only the story itself prints, black on white */
+@page {
+  margin: 2cm;
+}
+
+@media print {
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .story-reader {
+    border: none;
+    background: #fff;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .story-prose {
+    max-width: 65ch;
+    color: #000;
+  }
+}

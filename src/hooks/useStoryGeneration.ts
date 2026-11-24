@@ -16,6 +16,8 @@ export interface StoryGenerationState {
   error: string | null;
   generate: (request: StoryRequest) => Promise<void>;
   surpriseMe: () => Promise<void>;
+  regenerate: () => Promise<void>;
+  reset: () => void;
   abort: () => void;
 }
 
@@ -24,12 +26,14 @@ export function useStoryGeneration(): StoryGenerationState {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
+  const lastRequestRef = useRef<StoryRequest | null>(null);
 
   const run = useCallback(async (request: StoryRequest) => {
     if (controllerRef.current) {
       return;
     }
 
+    lastRequestRef.current = request;
     const controller = new AbortController();
     controllerRef.current = controller;
     setStoryText('');
@@ -98,7 +102,19 @@ export function useStoryGeneration(): StoryGenerationState {
 
   const surpriseMe = useCallback(() => run({ isSurprise: true }), [run]);
 
+  // Replays the exact last request (form configuration or Surprise Me mode).
+  const regenerate = useCallback(() => {
+    const lastRequest = lastRequestRef.current;
+    return lastRequest ? run(lastRequest) : Promise.resolve();
+  }, [run]);
+
+  const reset = useCallback(() => {
+    lastRequestRef.current = null;
+    setStoryText('');
+    setError(null);
+  }, []);
+
   const abort = useCallback(() => controllerRef.current?.abort(), []);
 
-  return { storyText, isLoading, error, generate, surpriseMe, abort };
+  return { storyText, isLoading, error, generate, surpriseMe, regenerate, reset, abort };
 }

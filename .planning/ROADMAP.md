@@ -14,9 +14,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Serverless Streaming Route** - Secure serverless Gemini streaming route handler with anti-buffering headers and rate-limit handling
 - [x] **Phase 2: Narrative Prompt Engine & Intelligent Fallback Generation** - Classical 4-part story generation with automatic fallback inference for partial or empty inputs
-- [ ] **Phase 3: Story Configuration & Character Builder** - Interactive character management, 8-genre selector, and premise input controls
-- [ ] **Phase 4: Story Reader Canvas & Clipboard Controls** - Typographic story reader canvas with real-time Markdown rendering and one-click copy feedback
-- [ ] **Phase 5: Story Regeneration, Surprise Mode & Production Deployment** - Dedicated Surprise Me mode, one-click regeneration with cooldowns, and live Vercel free-tier deployment
+- [x] **Phase 3: Story Configuration & Character Builder** - Interactive character management, 8-genre selector, and premise input controls
+- [x] **Phase 4: Story Reader Canvas & Clipboard Controls** - Typographic story reader canvas with real-time Markdown rendering and one-click copy feedback
+- [x] **Phase 5: Story Regeneration, Surprise Mode & Production Deployment** - Dedicated Surprise Me mode, one-click regeneration with cooldowns, and live Vercel free-tier deployment
 
 ## Phase Details
 
@@ -73,7 +73,7 @@ Plans:
   1. Story displays in a clean, responsive reader canvas with formatted book-like typography and distinct narrative stage headings
   2. User can copy the full story text to clipboard with a single click
   3. User sees instant visual confirmation (e.g. "Copied!") upon copying that reverts automatically after a brief delay
-**Plans**: TBD
+**Plans**: 1 plan (executed inline, no PLAN.md)
 **UI hint**: yes
 
 ### Phase 5: Story Regeneration, Surprise Mode & Production Deployment
@@ -85,7 +85,7 @@ Plans:
   1. User can click a dedicated "Surprise Me" button to immediately trigger a completely randomized story generation without filling in form inputs
   2. User can regenerate a story with a single click using current or updated parameters, with buttons disabled during generation to prevent quota burn
   3. Application builds cleanly with zero errors and deploys to Vercel free tier with streaming functionality verified in production
-**Plans**: TBD
+**Plans**: 1 plan (executed inline, no PLAN.md)
 **UI hint**: yes
 
 ## Progress
@@ -97,6 +97,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation & Serverless Streaming Route | 2/2 | Complete | 2026-11-24 |
 | 2. Narrative Prompt Engine & Intelligent Fallback Generation | 1/1 | Complete | 2026-11-24 |
-| 3. Story Configuration & Character Builder | 1/1 | Verification pending | - |
-| 4. Story Reader Canvas & Clipboard Controls | 0/TBD | Not started | - |
-| 5. Story Regeneration, Surprise Mode & Production Deployment | 0/TBD | Not started | - |
+| 3. Story Configuration & Character Builder | 1/1 | Complete | 2026-11-24 |
+| 4. Story Reader Canvas & Clipboard Controls | 1/1 | Complete | 2026-11-25 |
+| 5. Story Regeneration, Surprise Mode & Production Deployment | 1/1 | Complete | 2026-11-25 |

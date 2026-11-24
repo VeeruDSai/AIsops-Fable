@@ -50,25 +50,27 @@ describe('StoryForm', () => {
     expect(screen.getByRole('button', { name: 'Fantasy' }).getAttribute('aria-pressed')).toBe('false');
   });
 
-  it('adds up to 5 characters and removes individual rows', async () => {
+  it('shows no character counter and hides the add button at 5 characters', async () => {
     const user = userEvent.setup();
     render(<StoryForm />);
 
     const rows = () => screen.getAllByRole('textbox', { name: /^Character \d+ name$/ });
     expect(rows()).toHaveLength(1);
+    expect(screen.queryByText('1 / 5')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Add character' })).toBeDefined();
 
     for (let index = 0; index < 4; index += 1) {
       await user.click(screen.getByRole('button', { name: 'Add character' }));
     }
 
     expect(rows()).toHaveLength(5);
-    expect(screen.getByRole('button', { name: /Maximum of 5 characters/ })).toHaveProperty(
-      'disabled',
-      true
-    );
+    expect(screen.queryByText('5 / 5')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Add character' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Maximum of 5 characters/ })).toBeNull();
 
     await user.click(screen.getByRole('button', { name: 'Remove character 1' }));
     expect(rows()).toHaveLength(4);
+    expect(screen.getByRole('button', { name: 'Add character' })).toBeDefined();
   });
 
   it('submits a StoryRequest payload and accumulates streamed text', async () => {
@@ -181,6 +183,33 @@ describe('StoryForm', () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(JSON.parse(init.body as string)).toEqual({ isSurprise: true });
+    expect(await screen.findByText('A surprise.')).toBeDefined();
+  });
+
+  it('clears manual inputs when Surprise Me is clicked', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(textResponse(['A surprise.']));
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+    render(<StoryForm />);
+
+    await user.type(screen.getByRole('textbox', { name: /^Character 1 name$/ }), 'Mira');
+    await user.click(screen.getByRole('button', { name: 'Add character' }));
+    await user.type(screen.getByRole('textbox', { name: /^Character 2 name$/ }), 'Corin');
+    await user.click(screen.getByRole('button', { name: 'Mystery' }));
+    await user.type(screen.getByLabelText(/Premise/i), 'A missing moon');
+    await user.click(screen.getByRole('button', { name: 'Surprise Me' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(JSON.parse(init.body as string)).toEqual({ isSurprise: true });
+
+    const nameInput = screen.getByRole('textbox', { name: /^Character 1 name$/ }) as HTMLInputElement;
+    expect(nameInput.value).toBe('');
+    expect(screen.getAllByRole('textbox', { name: /^Character \d+ name$/ })).toHaveLength(1);
+    expect(screen.getByLabelText(/Premise/i)).toHaveProperty('value', '');
+    expect(screen.getByRole('button', { name: 'Mystery' }).getAttribute('aria-pressed')).toBe(
+      'false'
+    );
     expect(await screen.findByText('A surprise.')).toBeDefined();
   });
 

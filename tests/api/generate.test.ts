@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { POST } from '@/app/api/generate/route';
-import { DEFAULT_STORY_MODEL, FALLBACK_MODEL_CHAIN, GEMMA_MODEL } from '@/lib/gemini';
+import {
+  DEFAULT_STORY_MODEL,
+  FALLBACK_MODEL_CHAIN,
+  GEMMA_MODEL,
+  MODEL_FAILOVER_TIMEOUT_MS,
+} from '@/lib/gemini';
 import { buildStoryPrompt, STORY_SYSTEM_INSTRUCTION } from '@/lib/prompts';
 import { GoogleGenAI } from '@google/genai';
 
@@ -18,6 +23,7 @@ vi.mock('@google/genai', () => {
   }));
   return {
     GoogleGenAI: MockGoogleGenAI,
+    ThinkingLevel: { LOW: 'LOW' },
   };
 });
 
@@ -83,6 +89,8 @@ describe('POST /api/generate Route Handler', () => {
       config: expect.objectContaining({
         systemInstruction: STORY_SYSTEM_INSTRUCTION,
         abortSignal: expect.any(AbortSignal),
+        maxOutputTokens: 2048,
+        thinkingConfig: { thinkingLevel: 'LOW' },
       }),
     });
 
@@ -230,7 +238,7 @@ describe('POST /api/generate Route Handler', () => {
     expect(text).toContain('catching its breath! Gemini rate limit reached');
   });
 
-  it('falls back to gemini-3.7-flash after a pre-stream 503', async () => {
+  it('falls back to the next fast model after a pre-stream 503', async () => {
     process.env.GEMINI_API_KEY = 'test-api-key';
 
     async function* recoveredStream() {
@@ -251,8 +259,8 @@ describe('POST /api/generate Route Handler', () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toBe('A fallback tale.');
     expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
-    expect(mockGenerateContentStream.mock.calls[0]?.[0].model).toBe('gemini-3.8-flash');
-    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.7-flash');
+    expect(mockGenerateContentStream.mock.calls[0]?.[0].model).toBe('gemini-3.7-flash');
+    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.5-flash-lite');
   });
 
   it('retries the next model after a pre-stream 404', async () => {
@@ -276,7 +284,7 @@ describe('POST /api/generate Route Handler', () => {
     expect(res.status).toBe(200);
     expect(await res.text()).toBe('A provisioned tale.');
     expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
-    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.7-flash');
+    expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.5-flash-lite');
   });
 
   it('returns a clean 503 message when every model fails with 503', async () => {
@@ -337,7 +345,41 @@ describe('POST /api/generate Route Handler', () => {
     expect(gemmaCall.contents).toContain(STORY_SYSTEM_INSTRUCTION);
     expect(gemmaCall.contents).toContain(buildStoryPrompt({ premise }));
     expect(gemmaCall.config.systemInstruction).toBeUndefined();
+    expect(gemmaCall.config.thinkingConfig).toBeUndefined();
+    expect(gemmaCall.config.maxOutputTokens).toBe(2048);
     expect(gemmaCall.config.abortSignal).toBeDefined();
+  });
+
+  it('fails over when a model stalls past the 8-second failover budget', async () => {
+    vi.useFakeTimers();
+    try {
+      process.env.GEMINI_API_KEY = 'test-api-key';
+
+      async function* recoveredStream() {
+        yield { text: 'A punctual tale.' };
+      }
+
+      mockGenerateContentStream
+        .mockReturnValueOnce(new Promise(() => {}))
+        .mockResolvedValueOnce(recoveredStream());
+
+      const req = new NextRequest('http://localhost:3000/api/generate', {
+        method: 'POST',
+        body: JSON.stringify({ premise: 'A sleepy tortoise' }),
+      });
+
+      const resPromise = POST(req);
+      await vi.advanceTimersByTimeAsync(MODEL_FAILOVER_TIMEOUT_MS);
+      const res = await resPromise;
+
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe('A punctual tale.');
+      expect(mockGenerateContentStream).toHaveBeenCalledTimes(2);
+      expect(mockGenerateContentStream.mock.calls[0]?.[0].model).toBe('gemini-3.7-flash');
+      expect(mockGenerateContentStream.mock.calls[1]?.[0].model).toBe('gemini-3.5-flash-lite');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('stops the fallback chain on 429 with a friendly rate-limit response', async () => {

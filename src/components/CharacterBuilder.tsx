@@ -34,9 +34,8 @@ export function CharacterBuilder({ characters, onChange, disabled = false }: Cha
 
   return (
     <section className="min-w-0">
-      <div className="mb-2 flex items-baseline justify-between gap-3">
+      <div className="mb-2">
         <h2 className="text-sm font-semibold text-stone-800">Characters</h2>
-        <span className="text-xs text-stone-500">{characters.length} / {MAX_CHARACTERS}</span>
       </div>
 
       <div className="space-y-3">
@@ -88,15 +87,17 @@ export function CharacterBuilder({ characters, onChange, disabled = false }: Cha
         ))}
       </div>
 
-      <button
-        type="button"
-        disabled={disabled || atCapacity}
-        onClick={addCharacter}
-        className="mt-3 inline-flex items-center gap-2 rounded-md border border-dashed border-amber-600 px-3 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 disabled:cursor-not-allowed disabled:border-stone-300 disabled:text-stone-400 disabled:hover:bg-transparent"
-      >
-        <Plus aria-hidden="true" size={16} />
-        {atCapacity ? 'Maximum of 5 characters' : 'Add character'}
-      </button>
+      {!atCapacity && (
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={addCharacter}
+          className="mt-3 inline-flex items-center gap-2 rounded-md border border-dashed border-amber-600 px-3 py-2 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 disabled:cursor-not-allowed disabled:border-stone-300 disabled:text-stone-400 disabled:hover:bg-transparent"
+        >
+          <Plus aria-hidden="true" size={16} />
+          Add character
+        </button>
+      )}
     </section>
   );
 }

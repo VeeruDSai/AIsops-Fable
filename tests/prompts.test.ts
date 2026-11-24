@@ -8,12 +8,12 @@ function userInputsSection(prompt: string): string {
   return prompt.slice(start, end);
 }
 
-const requiredHeaders = [
-  '# [Catchy Title]',
+const forbiddenSubheadings = [
   '### The Beginning',
   '### The Middle',
   '### The Climax',
   '### The Conclusion',
+  'Act 1',
 ];
 
 describe('buildStoryPrompt', () => {
@@ -129,18 +129,51 @@ describe('buildStoryPrompt', () => {
     expect(userInputsSection(prompt)).toContain(`<premise>${'P'.repeat(500)}</premise>`);
   });
 
+  it('instructs a concise 350-450 word story with a complete ending', () => {
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('350 to 450 words');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('80 to 110 words per part');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('Never trail off mid-scene');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('definite, satisfying final sentence');
+    expect(STORY_SYSTEM_INSTRUCTION).not.toContain('500 and 800 words');
+  });
+
+  it('keeps the title heading while forbidding act subheadings', () => {
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('# [Catchy Title]');
+    expect(STORY_SYSTEM_INSTRUCTION).not.toMatch(/^###/m);
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('Do NOT output section subheadings');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('blank-line paragraph breaks');
+
+    const prompt = buildStoryPrompt({});
+    expect(prompt).toContain('# [Catchy Title]');
+    expect(prompt).not.toMatch(/^###/m);
+    expect(prompt).toContain('no section subheadings, act headings, or bold section labels');
+  });
+
+  it('still requires the four classic narrative parts in prose form', () => {
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('four classic parts');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('beginning (setup)');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('middle (rising conflict)');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('climax');
+    expect(STORY_SYSTEM_INSTRUCTION).toContain('conclusion (resolution)');
+
+    const prompt = buildStoryPrompt({ genre: 'Fantasy' });
+    expect(prompt).toContain('four classic parts in order');
+    expect(prompt).toContain('beginning, rising conflict, climax, resolution');
+  });
+
   it.each<StoryRequest>([
     {},
     { characters: [{ id: '1', name: 'Mira' }] },
     { genre: 'Horror' },
     { premise: 'A map redraws itself at midnight.' },
     { isSurprise: true },
-  ])('always mandates the four-part Markdown structure for %j', (request) => {
+  ])('requests exactly one title heading with no act subheadings for %j', (request) => {
     const prompt = buildStoryPrompt(request);
 
-    for (const header of requiredHeaders) {
-      expect(prompt).toContain(header);
-      expect(STORY_SYSTEM_INSTRUCTION).toContain(header);
+    expect(prompt).toContain('# [Catchy Title]');
+    for (const heading of forbiddenSubheadings) {
+      expect(prompt).not.toContain(`\n${heading}\n`);
+      expect(STORY_SYSTEM_INSTRUCTION).not.toContain(`\n${heading}\n`);
     }
   });
 });

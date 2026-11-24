@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   FALLBACK_MODEL_CHAIN,
   GEMMA_MODEL,
+  ModelTimeoutError,
   getFriendlyGeminiError,
   getGeminiClient,
+  getThinkingConfig,
+  openContentStream,
   parseGeminiError,
   type GeminiErrorInfo,
 } from '@/lib/gemini';
@@ -47,19 +50,32 @@ export async function POST(req: NextRequest) {
   for (const model of FALLBACK_MODEL_CHAIN) {
     try {
       const usesGemmaPrompt = model === GEMMA_MODEL;
-      responseStream = await ai.models.generateContentStream({
-        model,
-        contents: usesGemmaPrompt ? `${STORY_SYSTEM_INSTRUCTION}\n\n${prompt}` : prompt,
-        config: usesGemmaPrompt
-          ? { abortSignal: abortController.signal }
-          : {
-              systemInstruction: STORY_SYSTEM_INSTRUCTION,
-              abortSignal: abortController.signal,
-            },
-      });
+      const thinkingConfig = getThinkingConfig(model);
+      responseStream = await openContentStream(
+        ai,
+        {
+          model,
+          contents: usesGemmaPrompt ? `${STORY_SYSTEM_INSTRUCTION}\n\n${prompt}` : prompt,
+          config: usesGemmaPrompt
+            ? { abortSignal: abortController.signal, maxOutputTokens: 2048 }
+            : {
+                systemInstruction: STORY_SYSTEM_INSTRUCTION,
+                abortSignal: abortController.signal,
+                // Headroom for a ~450-word story so it never ends on MAX_TOKENS.
+                maxOutputTokens: 2048,
+                ...(thinkingConfig ? { thinkingConfig } : {}),
+              },
+        },
+        abortController.signal
+      );
       break;
     } catch (err: unknown) {
-      const info = parseGeminiError(err);
+      // A model that stalls past the failover budget is treated like a
+      // transient unavailability so the next model takes over.
+      const info =
+        err instanceof ModelTimeoutError
+          ? ({ status: 503, kind: 'unavailable', retryable: true } as const)
+          : parseGeminiError(err);
       lastErrorInfo = info;
       if (info.kind === 'rate-limit' || !info.retryable) {
         const friendly = getFriendlyGeminiError(info);

@@ -36,14 +36,29 @@ export function StoryForm() {
     void generate(request);
   };
 
+  const clearFormFields = () => {
+    setCharacters([createCharacter()]);
+    setGenre('');
+    setPremise('');
+  };
+
   const handleReset = () => {
     if (isLoading) {
       return;
     }
-    setCharacters([createCharacter()]);
-    setGenre('');
-    setPremise('');
+    clearFormFields();
     reset();
+  };
+
+  const handleSurpriseMe = () => {
+    if (isLoading) {
+      return;
+    }
+    // Clear manual inputs first so stale values don't linger beside the
+    // surprise story. The hook still remembers the surprise request, so
+    // Regenerate keeps producing Surprise Me stories.
+    clearFormFields();
+    void surpriseMe();
   };
 
   return (
@@ -72,7 +87,7 @@ export function StoryForm() {
           <button
             type="button"
             disabled={isLoading}
-            onClick={() => void surpriseMe()}
+            onClick={handleSurpriseMe}
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-amber-700 px-4 py-2.5 text-sm font-semibold text-amber-800 transition-colors hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <WandSparkles aria-hidden="true" size={16} />

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'StoryForge AI',
-  description: 'Instant, rich stories powered by Generative AI',
+  title: "AIsop's Fables",
+  description: 'Instant, rich fables powered by Generative AI',
 };
 
 export default function RootLayout({

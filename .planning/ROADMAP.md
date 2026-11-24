@@ -1,8 +1,8 @@
-# Roadmap: StoryForge AI
+# Roadmap: AIsop's Fables
 
 ## Overview
 
-StoryForge AI is an interactive, zero-cost story generation web application powered by Next.js and Google Gemini. The journey takes the project from a secure serverless streaming backend and adaptive prompt engine, through dynamic character and story configuration controls, to a polished typographic reader canvas and production deployment on Vercel's free tier. Every phase delivers a functional, verifiable capability designed to provide immediate streaming feedback and eliminate writer's block with zero login or paywall friction.
+AIsop's Fables is an interactive, zero-cost story generation web application powered by Next.js and Google Gemini. The journey takes the project from a secure serverless streaming backend and adaptive prompt engine, through dynamic character and story configuration controls, to a polished typographic reader canvas and production deployment on Vercel's free tier. Every phase delivers a functional, verifiable capability designed to provide immediate streaming feedback and eliminate writer's block with zero login or paywall friction.
 
 ## Phases
 

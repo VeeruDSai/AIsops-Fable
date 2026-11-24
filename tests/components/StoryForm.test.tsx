@@ -259,7 +259,7 @@ describe('StoryForm', () => {
       'false'
     );
     expect(
-      screen.getByText('Your tale will appear here as it is written.')
+      screen.getByText('Your fable will appear here as it is written.')
     ).toBeDefined();
     expect(screen.queryByText(/The Moon Fox/)).toBeNull();
     expect(screen.getByRole('button', { name: 'Regenerate' })).toHaveProperty('disabled', true);

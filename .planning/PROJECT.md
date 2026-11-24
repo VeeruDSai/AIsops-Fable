@@ -1,8 +1,8 @@
-# StoryForge AI
+# AIsop's Fables
 
 ## What This Is
 
-StoryForge AI is a beginner-friendly web application powered by Generative AI that creates rich, engaging stories on demand. Users can define characters, select genres, and provide premise descriptions, or let the AI intelligently invent missing details and craft unexpected tales with a dedicated "Surprise Me" mode.
+AIsop's Fables is a beginner-friendly web application powered by Generative AI that creates rich, engaging stories on demand. Users can define characters, select genres, and provide premise descriptions, or let the AI intelligently invent missing details and craft unexpected tales with a dedicated "Surprise Me" mode.
 
 ## Core Value
 

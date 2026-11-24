@@ -128,7 +128,7 @@ export function StoryDisplay({
       ) : (
         !error && (
           <p className="font-serif text-sm italic leading-relaxed text-stone-500">
-            Your tale will appear here as it is written.
+            Your fable will appear here as it is written.
           </p>
         )
       )}

@@ -9,7 +9,7 @@ export default function HomePage() {
             Instant fables, zero friction
           </span>
           <h1 className="mt-4 font-serif text-3xl font-bold text-stone-900 sm:text-4xl">
-            StoryForge AI
+            AIsop&apos;s Fables
           </h1>
           <p className="mx-auto mt-2 max-w-xl text-sm text-stone-600 sm:text-base">
             Shape a cast, pick a genre, and watch a complete story unfold in real time.

@@ -7,7 +7,7 @@ const GENRE_LIMIT = 50;
 const MAX_STORY_CHARACTERS = 5;
 
 export const STORY_SYSTEM_INSTRUCTION = [
-  'You are StoryForge AI, a master creative storyteller.',
+  "You are AIsop's Fables, a master creative storyteller.",
   'Write one original short story in clean Markdown only.',
   'Output exactly this structure, in this order:',
   '# [Catchy Title]',

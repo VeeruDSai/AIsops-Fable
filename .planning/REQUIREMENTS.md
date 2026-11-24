@@ -1,4 +1,4 @@
-# Requirements: StoryForge AI
+# Requirements: AIsop's Fables
 
 **Defined:** 2026-11-24
 **Core Value:** Generate creative, coherent, and well-structured stories with beginning, middle, climax, and conclusion—even when given minimal or no user input—delivering real-time streaming feedback and seamless regeneration.

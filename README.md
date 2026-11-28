@@ -1,5 +1,7 @@
 # AIsop's Fables
 
+**Live Demo:** [https://a-isops-fable.vercel.app](https://a-isops-fable.vercel.app)
+
 AIsop's Fables turns a few characters, a genre, and a premise — or nothing at all — into a complete four-part story streamed live into a book-like reader. It runs entirely on free tiers: Vercel Hobby for hosting and the Google Gemini free tier for generation, with no database, no accounts, and no cost.
 
 ## Features
